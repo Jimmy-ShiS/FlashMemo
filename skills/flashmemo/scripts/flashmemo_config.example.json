@@ -1,0 +1,12 @@
+{
+  "_comment": "FlashMemo 配置文件 - 删除本行注释后生效",
+  "_docs": "配置说明见：https://github.com/your-repo/flashmemo#configuration",
+  
+  "base_path": null,
+  "timezone": "Asia/Shanghai",
+  "date_format": "%Y-%m-%d",
+  "time_format": "%H:%M:%S",
+  "encoding": "utf-8",
+  "backup_enabled": true,
+  "backup_days": 30
+}

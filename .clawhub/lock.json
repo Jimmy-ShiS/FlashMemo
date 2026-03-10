@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "skills": {
+    "find-skills": {
+      "version": "0.1.0",
+      "installedAt": 1773032462510
+    },
+    "skill-vetter": {
+      "version": "1.0.0",
+      "installedAt": 1773032538257
+    },
+    "agent-browser": {
+      "version": "0.2.0",
+      "installedAt": 1773042019956
+    },
+    "tavily-search": {
+      "version": "1.0.0",
+      "installedAt": 1773043027624
+    },
+    "agent-autopilot": {
+      "version": "1.4.1",
+      "installedAt": 1773046097325
+    },
+    "agent-memory": {
+      "version": "1.0.0",
+      "installedAt": 1773047054843
+    },
+    "diagram-generator": {
+      "version": "1.1.1",
+      "installedAt": 1773047405653
+    },
+    "adaptive-reasoning": {
+      "version": "1.0.0",
+      "installedAt": 1773131874734
+    },
+    "github": {
+      "version": "1.0.0",
+      "installedAt": 1773129362699
+    }
+  }
+}
