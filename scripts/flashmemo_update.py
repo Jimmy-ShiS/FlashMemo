@@ -71,15 +71,40 @@ def update_memo_status(memo_file: Path, keywords: list, new_status: str) -> dict
                 break
         
         if matched:
-            # 更新状态
-            if ": 代办-" in line:
+            # 更新状态 - 支持多种格式
+            updated = False
+            new_line = line
+            
+            # 格式 1: "代办 -" → "完成-"（中间有空格，后面有短横）
+            if "代办 -" in line:
+                new_line = line.replace("代办 -", "完成-", 1)
+                updated = True
+            elif "完成-" in line and new_status == "代办":
+                new_line = line.replace("完成-", "代办 -", 1)
+                updated = True
+            # 格式 2: ": 代办-" 或 ": 完成-"（冒号后有空格）
+            elif ": 代办-" in line:
                 new_line = line.replace(": 代办-", ": 完成-", 1)
-                new_lines.append(new_line + "\n")
-                updated_count += 1
-                updated_records.append(new_line)
+                updated = True
             elif ": 完成-" in line and new_status == "代办":
-                # 从完成改回代办
                 new_line = line.replace(": 完成-", ": 代办-", 1)
+                updated = True
+            # 格式 3: ":代办-" 或 ":完成-"（无空格）
+            elif ":代办-" in line:
+                new_line = line.replace(":代办-", ":完成-", 1)
+                updated = True
+            elif ":完成-" in line and new_status == "代办":
+                new_line = line.replace(":完成-", ":代办-", 1)
+                updated = True
+            # 格式 4: "代办-" 或 "完成-"（直接开头）
+            elif line.startswith("代办-") and not line.startswith("完成-"):
+                new_line = "完成" + line[2:]
+                updated = True
+            elif line.startswith("完成-") and new_status == "代办":
+                new_line = "代办" + line[2:]
+                updated = True
+            
+            if updated:
                 new_lines.append(new_line + "\n")
                 updated_count += 1
                 updated_records.append(new_line)
