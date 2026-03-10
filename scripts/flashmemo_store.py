@@ -81,12 +81,31 @@ def main():
         # 备忘存储到 ImportantMemo.md
         memo_file = user_dir / "ImportantMemo.md"
         
-        # 判断是"完成"还是"代办"
+        # 判断是"完成"还是"代办"，并清理文本中的完成标记
         prefix = "代办"
-        if any(kw in args.text for kw in ["完成", "已", "好了", "搞定"]):
-            prefix = "完成"
+        text = args.text
         
-        entry = f"{timestamp}: {prefix}-{args.urgency}-{args.text}"
+        # 完成关键词列表（按长度降序排列，先替换长的）
+        completion_keywords = ["已完成", "已办", "已做", "已完成", "好了", "搞定", "完成", "✅", "✓", "✔", "已"]
+        
+        # 检测是否包含完成关键词
+        completion_indicators = ["完成", "好了", "搞定", "✅", "✓", "✔"]
+        
+        if any(kw in args.text for kw in completion_indicators):
+            prefix = "完成"
+            # 清理文本中的完成标记（按长度降序，避免部分替换）
+            for kw in completion_keywords:
+                text = text.replace(kw, "")
+            # 清理多余的空格和符号
+            text = text.strip().rstrip("-").rstrip("—").strip()
+            # 清理连续的多个空格
+            import re
+            text = re.sub(r'\s+', ' ', text).strip()
+            # 如果清理后为空，使用原始文本
+            if not text:
+                text = args.text
+        
+        entry = f"{timestamp}: {prefix} - {args.urgency} - {text}"
         
         # 检查是否已存在（去重）
         if memo_file.exists():

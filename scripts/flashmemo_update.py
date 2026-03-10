@@ -13,6 +13,19 @@ from pathlib import Path
 from datetime import datetime
 
 
+def normalize_status_format(line: str, new_status: str) -> str:
+    """
+    标准化状态格式，直接替换状态词
+    """
+    if new_status == "完成":
+        # 直接替换：替换 "代办" 为 "完成"
+        line = line.replace("代办", "完成", 1)
+    elif new_status == "代办":
+        line = line.replace("完成", "代办", 1)
+    
+    return line
+
+
 def get_base_path(args_base_path=None) -> Path:
     """获取基础路径（支持跨平台配置）"""
     if args_base_path:
@@ -71,40 +84,29 @@ def update_memo_status(memo_file: Path, keywords: list, new_status: str) -> dict
                 break
         
         if matched:
-            # 更新状态 - 支持多种格式
-            updated = False
-            new_line = line
+            # 检查当前状态
+            current_is_daiban = bool(re.search(r'代办\s*-', line))
+            current_is_wancheng = bool(re.search(r'完成\s*-', line))
             
-            # 格式 1: "代办 -" → "完成-"（中间有空格，后面有短横）
-            if "代办 -" in line:
-                new_line = line.replace("代办 -", "完成-", 1)
-                updated = True
-            elif "完成-" in line and new_status == "代办":
-                new_line = line.replace("完成-", "代办 -", 1)
-                updated = True
-            # 格式 2: ": 代办-" 或 ": 完成-"（冒号后有空格）
-            elif ": 代办-" in line:
-                new_line = line.replace(": 代办-", ": 完成-", 1)
-                updated = True
-            elif ": 完成-" in line and new_status == "代办":
-                new_line = line.replace(": 完成-", ": 代办-", 1)
-                updated = True
-            # 格式 3: ":代办-" 或 ":完成-"（无空格）
-            elif ":代办-" in line:
-                new_line = line.replace(":代办-", ":完成-", 1)
-                updated = True
-            elif ":完成-" in line and new_status == "代办":
-                new_line = line.replace(":完成-", ":代办-", 1)
-                updated = True
-            # 格式 4: "代办-" 或 "完成-"（直接开头）
-            elif line.startswith("代办-") and not line.startswith("完成-"):
-                new_line = "完成" + line[2:]
-                updated = True
-            elif line.startswith("完成-") and new_status == "代办":
-                new_line = "代办" + line[2:]
-                updated = True
+            # 判断是否需要更新
+            needs_update = False
+            if new_status == "完成" and current_is_daiban:
+                needs_update = True
+            elif new_status == "代办" and current_is_wancheng:
+                needs_update = True
             
-            if updated:
+            if needs_update:
+                # 更新状态
+                new_line = normalize_status_format(line, new_status)
+                
+                # 清理文本后面的完成标记
+                completion_markers = ["✅ 已完成", "✓ 已完成", "✔ 已完成", "已完成", "✅", "✓", "✔"]
+                for marker in completion_markers:
+                    if marker in new_line:
+                        new_line = new_line.replace(marker, "")
+                # 清理多余空格
+                new_line = new_line.rstrip()
+                
                 new_lines.append(new_line + "\n")
                 updated_count += 1
                 updated_records.append(new_line)
