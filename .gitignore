@@ -1,0 +1,41 @@
+# 日志和临时文件
+*.log
+*.log.*
+logs/
+tmp/
+*.tmp
+
+# 记忆文件（每天变动）
+memory/*.md
+MEMORY.md
+
+# 会话状态
+sessions/
+*.session.json
+
+# 运行时状态
+*.lock
+*.pid
+state.json
+heartbeat-state.json
+
+# 缓存
+cache/
+*.cache
+node_modules/
+
+# 编辑器文件
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 凭证文件（敏感）
+credentials/
+*.key
+*.secret
