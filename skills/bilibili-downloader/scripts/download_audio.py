@@ -12,7 +12,7 @@ from pathlib import Path
 from bilibili_api import video, sync
 
 # 默认下载目录
-DEFAULT_OUTPUT_DIR = Path.home() / "Downloaders" / "OpenClaw" / "bilibili"
+DEFAULT_OUTPUT_DIR = Path.home() / "Downloads" / "OpenClaw" / "bilibili"
 
 
 def download_audio(bvid, output_path=None):

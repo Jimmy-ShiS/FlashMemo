@@ -9,7 +9,7 @@ description: Download videos, audio, subtitles, and covers from Bilibili using b
 
 **所有下载内容默认保存到：**
 ```
-~/Downloaders/OpenClaw/bilibili/
+~/Downloads/OpenClaw/bilibili/
 ```
 
 ## Quick Start
