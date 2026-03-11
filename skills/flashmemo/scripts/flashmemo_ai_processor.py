@@ -160,11 +160,16 @@ def _simple_classify(text: str) -> ClassificationResult:
     
     分类优先级：memo > account > work > life
     待办事项优先匹配，确保未来事件不会误分类为 life
+    
+    注意："扣款"、"缴费"、"充值"等词虽然是财务相关，但通常是待办事项（还没发生），
+    所以优先分类为 memo，除非上下文明确表示已发生。
     """
     # 第一优先级：备忘/待办（还没发生的事）
     # 关键词：记得、别忘了、待办、提醒、要、准备、打算、计划、帮我记、记一下
+    # 特殊词：扣款、缴费、充值（这些通常是待办，不是已发生的账目）
     memo_keywords = ['记得', '别忘了', '待办', '提醒', '要', '准备', '打算', 
-                     '计划', '帮我记', '记一下', '备忘', '有事', '任务']
+                     '计划', '帮我记', '记一下', '备忘', '有事', '任务',
+                     '扣款', '缴费', '充值']
     if any(kw in text for kw in memo_keywords):
         urgency = UrgencyLevel.URGENT if any(kw in text for kw in ['今天', '明天', '必须', '立即', '马上']) else UrgencyLevel.NORMAL
         return ClassificationResult(
@@ -174,10 +179,10 @@ def _simple_classify(text: str) -> ClassificationResult:
             urgency=urgency
         )
     
-    # 第二优先级：账目（涉及金钱）
+    # 第二优先级：账目（涉及金钱，已发生的事）
     # 关键词：元、块、圆、¥、￥、收入、支出、花了、买了、收到、入账、工资、消费
     account_keywords = ['元', '块', '圆', '¥', '￥', '收入', '支出', '花了', '买了', 
-                        '收到', '入账', '工资', '稿费', '消费', '付款', '支付', '花费']
+                        '收到', '入账', '工资', '稿费', '消费', '花费']
     if any(kw in text for kw in account_keywords):
         # 额外检查：是否有数字（金额）
         import re
