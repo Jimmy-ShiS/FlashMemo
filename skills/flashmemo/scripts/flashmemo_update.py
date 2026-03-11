@@ -139,7 +139,9 @@ def main():
     
     # 获取基础路径
     base_dir = get_base_path(args.base_path)
-    user_dir = base_dir / args.channel / args.user_id
+    # 渠道名称统一转小写，避免大小写不一致导致目录分散
+    channel = args.channel.lower()
+    user_dir = base_dir / channel / args.user_id
     
     memo_file = user_dir / "ImportantMemo.md"
     

@@ -106,6 +106,66 @@ Capture what matters. Decisions, context, things to remember. Skip the secrets u
 - 用户可随时查询任意任务状态
 - 使用 `subagents list` 查看活跃任务
 
+## 📝 待办管理规则
+
+**核心原则：所有待办事项统一使用 FlashMemo 管理**
+
+### 存储位置
+
+```
+~/Documents/FlashMemo/feishu/ou_adf0d189f4676cb9f7176af21cc1aa0a/
+├── ImportantMemo.md          # 重要备忘
+├── life/2026/03/2026-03-12.md  # 按日期分类
+└── ...
+```
+
+### 使用方式
+
+| 操作 | 脚本 | 示例 |
+|------|------|------|
+| 存储待办 | `flashmemo_store.py` | 新增待办 + 设置提醒时间 |
+| 查询待办 | `flashmemo_query.py` | 查询今天/明天的待办 |
+| 更新状态 | `flashmemo_update.py` | 标记为完成/修改时间 |
+| 汇总报告 | `flashmemo_summary.py` | 生成待办汇总 |
+
+### 定时提醒
+
+- 使用 flashmemo 的定时消息提醒能力
+- 用户必须明确指定提醒时间
+- 没有明确时间 = 只存储不设置提醒
+
+### HEARTBEAT.md
+
+- ❌ 不再存储待办事项
+- ✅ 仅用于 heartbeat 机制配置
+- ✅ 保持空白跳过 heartbeat API 调用
+
+### 技术实现
+
+```python
+# 存储待办
+python3 flashmemo_store.py \
+  --channel feishu \
+  --user-id ou_xxx \
+  --category life \
+  --text "待办内容" \
+  --urgency 重要 \
+  --timestamp "2026-03-12T10:00:00+08:00"
+
+# 查询待办
+python3 flashmemo_query.py \
+  --channel feishu \
+  --user-id ou_xxx \
+  --date today
+
+# 标记完成
+python3 flashmemo_update.py \
+  --channel feishu \
+  --user-id ou_xxx \
+  --status 完成 \
+  --text "待办内容"
+```
+
 ### 技术实现
 
 ```python

@@ -81,6 +81,41 @@ FlashMemo 是一个**个人流水账记录工具集**，提供文件存储、查
 
 ---
 
+## 🔑 获取用户 ID（重要！）
+
+**在所有脚本调用中，`--user-id` 必须使用当前消息发送者的 ID，严禁查询所有用户数据！**
+
+### 飞书渠道获取用户 ID
+
+从消息上下文中获取 **SenderId**（格式：`ou_xxxxxxxxxx`）：
+
+```python
+# 从消息元数据中获取
+user_id = message_context.get("SenderId")  # 例如："ou_adf0d189f4676cb9f7176af21cc1aa0a"
+```
+
+**调用示例**（飞书渠道）：
+```bash
+# ✅ 正确：使用当前用户的 SenderId
+python3 scripts/flashmemo_query.py \
+  --channel "feishu" \
+  --user-id "ou_adf0d189f4676cb9f7176af21cc1aa0a" \
+  --category "memo"
+
+# ❌ 错误：不要省略 user-id 或使用通配符（会查询所有用户数据！）
+python3 scripts/flashmemo_query.py --channel "feishu" --category "memo"
+```
+
+### 其他渠道
+
+- **WhatsApp**: 使用发送者的 WhatsApp ID
+- **Telegram**: 使用发送者的 Telegram user_id
+- **Webchat**: 使用会话用户 ID
+
+**核心原则**：用户查询个人数据时，**必须**通过 `--user-id` 限制为当前用户，确保数据隔离！
+
+---
+
 ## 🛠️ 可用工具
 
 ### 1. 记录存储脚本
@@ -92,7 +127,7 @@ FlashMemo 是一个**个人流水账记录工具集**，提供文件存储、查
 **调用方式**:
 ```bash
 python3 scripts/flashmemo_store.py \
-  --channel "Feishu" \
+  --channel "feishu" \
   --user-id "ou_xxxxx" \
   --category "work|life|account|memo" \
   --text "内容文本" \
@@ -117,19 +152,19 @@ export FLASHMEMO_BASE_PATH="/mnt/data/FlashMemo"
 ```bash
 # 存储工作记录
 python3 scripts/flashmemo_store.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "work" \
   --text "上午开会讨论 Q3 计划"
 
 # 存储账目
 python3 scripts/flashmemo_store.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "account" \
   --text "收入 - 兼职稿费 -500.00"
 
 # 存储备忘
 python3 scripts/flashmemo_store.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "memo" \
   --text "明天下午 5 点前提交报告" \
   --urgency "紧急"
@@ -156,26 +191,26 @@ python3 scripts/flashmemo_store.py \
 ```bash
 # 查询今日记录
 python3 scripts/flashmemo_query.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "work" \
   --date "today"
 
 # 查询指定日期
 python3 scripts/flashmemo_query.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "account" \
   --date "2026-03-10"
 
 # 查询日期范围
 python3 scripts/flashmemo_query.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "account" \
   --start-date "2026-03-01" \
   --end-date "2026-03-10"
 
 # 查询备忘
 python3 scripts/flashmemo_query.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --category "memo" \
   --urgency "紧急"
 ```
@@ -197,14 +232,14 @@ python3 scripts/flashmemo_query.py \
 ```bash
 # 标记为完成
 python3 scripts/flashmemo_update.py \
-  --channel "Feishu" \
+  --channel "feishu" \
   --user-id "ou_xxxxx" \
   --keywords "交报告" "买礼物" \
   --status "完成"
 
 # 改回代办（如果需要）
 python3 scripts/flashmemo_update.py \
-  --channel "Feishu" \
+  --channel "feishu" \
   --user-id "ou_xxxxx" \
   --keywords "交报告" \
   --status "代办"
@@ -221,7 +256,7 @@ python3 scripts/flashmemo_update.py \
 
 OpenClaw 调用：
 python3 flashmemo_update.py \
-  --channel "Feishu" --user-id "ou_xxxxx" \
+  --channel "feishu" --user-id "ou_xxxxx" \
   --keywords "交报告" "买礼物" --status "完成"
 
 输出：
@@ -244,22 +279,22 @@ python3 flashmemo_update.py \
 ```bash
 # 今日汇总
 python3 scripts/flashmemo_summary.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --period "today"
 
 # 本周汇总
 python3 scripts/flashmemo_summary.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --period "week"
 
 # 本月汇总
 python3 scripts/flashmemo_summary.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --period "month"
 
 # 自定义日期范围
 python3 scripts/flashmemo_summary.py \
-  --channel "Feishu" --user-id "ou_123" \
+  --channel "feishu" --user-id "ou_123" \
   --start-date "2026-03-01" \
   --end-date "2026-03-10"
 ```
@@ -291,7 +326,12 @@ python3 scripts/flashmemo_summary.py \
    - "中午吃了碗牛肉面 25 块" → account（支出 25 元）
    - "下午开会讨论了 Q3 计划" → work
 
-2. **调用存储脚本**:
+2. **分类判断（重要！）**：
+   - **只要内容包含金额数字 + 货币单位（元/块/¥/￥），必须分类为 account！**
+   - "午餐 144 元"、"奶茶 14.8 元"、"淘宝买了 137.88 元" → 都是 **account**，不是 life！
+   - 只有不涉及金钱的日常生活才分类为 life（如"晚上和朋友看电影"）
+
+3. **调用存储脚本**:
 ```bash
 # 存储账目
 python3 scripts/flashmemo_store.py \
@@ -529,12 +569,17 @@ OpenClaw: "✅ 已设置提醒：明天（3 月 11 日）下午 3 点 开会"
 
 OpenClaw 应该使用自己的模型能力进行分类：
 
-| 分类 | 判断标准 | 示例 |
-|------|---------|------|
-| **work** | 工作任务、会议、项目、报告 | "开会讨论 Q3 计划" |
-| **life** | 日常生活、娱乐、健康、社交 | "晚上和朋友看电影" |
-| **account** | 涉及金钱、消费、收入 | "吃饭花了 25 元" |
-| **memo** | 待办、提醒、计划 | "记得明天交报告" |
+| 分类 | 判断标准 | 关键词示例 | 示例 |
+|------|---------|-----------|------|
+| **account (账目)** | 涉及金钱、消费、收入、支出 | 元、块、花了、买了、收入、支出、¥、￥ | "午餐 144 元"、"奶茶 14.8 元"、"淘宝买了 137.88 元" |
+| **work** | 工作任务、会议、项目、报告 | 开会、项目、报告、客户、工作 | "开会讨论 Q3 计划" |
+| **life** | 日常生活、娱乐、健康、社交（**不涉及金钱**） | 吃饭、看电影、运动、睡觉 | "晚上和朋友看电影"、"今天跑步 5 公里" |
+| **memo** | 待办、提醒、计划 | 记得、别忘了、待办、提醒 | "记得明天交报告" |
+
+**⚠️ 重要：账目优先原则**
+- **只要内容涉及金额数字 + 货币单位（元/块/¥），必须分类为 account！**
+- 即使内容是"午餐 144 元"，也属于 account，不是 life！
+- "买了 X 元 Y"、"花了 X 元"、"X 元" → 都是 account
 
 **紧急程度判断**（仅 memo）:
 - **紧急**: 今天、明天、截止、立即
@@ -618,7 +663,7 @@ flashmemo/
 ### flashmemo_store.py
 
 **参数**:
-- `--channel`: 渠道（Feishu/WhatsApp 等）
+- `--channel`: 渠道（feishu/WhatsApp 等）
 - `--user-id`: 用户 ID
 - `--category`: 分类（work/life/account/memo）
 - `--text`: 内容文本

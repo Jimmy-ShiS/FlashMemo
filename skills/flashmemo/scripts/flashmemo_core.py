@@ -37,8 +37,13 @@ MEMO_FILE = "ImportantMemo.md"
 # ============================================================================
 
 def ensure_directories(channel: str, user_id: str) -> Dict[str, Path]:
-    """确保所需目录存在"""
-    user_dir = BASE_DIR / str(channel) / str(user_id)
+    """确保所需目录存在
+    
+    渠道名称统一转小写，避免大小写不一致导致目录分散
+    """
+    # 渠道名称统一转小写（修复 Feishu/feishu 问题）
+    channel = str(channel).lower()
+    user_dir = BASE_DIR / channel / str(user_id)
     dirs = {}
     
     for category in CATEGORIES:

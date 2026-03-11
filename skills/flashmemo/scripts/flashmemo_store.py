@@ -65,7 +65,9 @@ def main():
     
     # 获取基础路径（支持跨平台配置）
     base_dir = get_base_path(args.base_path)
-    user_dir = base_dir / args.channel / args.user_id
+    # 渠道名称统一转小写，避免大小写不一致导致目录分散
+    channel = args.channel.lower()
+    user_dir = base_dir / channel / args.user_id
     
     # 确保目录存在
     user_dir.mkdir(parents=True, exist_ok=True)

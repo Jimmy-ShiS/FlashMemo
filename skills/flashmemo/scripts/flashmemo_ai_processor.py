@@ -156,16 +156,33 @@ def submit_ai_request(request: dict) -> Optional[dict]:
 # ============================================================================
 
 def _simple_classify(text: str) -> ClassificationResult:
-    """简单规则分类（fallback）"""
-    if any(kw in text for kw in ['元', '块', '收到', '花了', '收入', '支出']):
+    """简单规则分类（fallback）
+    
+    分类优先级：account > memo > work > life
+    账目关键词优先匹配，确保涉及金额的内容不会误分类为 life
+    """
+    # 第一优先级：账目（涉及金钱）
+    # 关键词：元、块、圆、¥、￥、收入、支出、花了、买了、收到、入账、工资、消费
+    account_keywords = ['元', '块', '圆', '¥', '￥', '收入', '支出', '花了', '买了', 
+                        '收到', '入账', '工资', '稿费', '消费', '付款', '支付', '花费']
+    if any(kw in text for kw in account_keywords):
+        # 额外检查：是否有数字（金额）
+        import re
+        if re.search(r'\d+(?:\.\d+)?', text):
+            return ClassificationResult(
+                category=Category.ACCOUNT,
+                confidence=0.9,
+                reasoning="检测到金额数字和财务相关词汇"
+            )
         return ClassificationResult(
             category=Category.ACCOUNT,
             confidence=0.7,
             reasoning="检测到财务相关词汇"
         )
     
-    if any(kw in text for kw in ['记得', '别忘了', '明天', '待办', '必须']):
-        urgency = UrgencyLevel.URGENT if any(kw in text for kw in ['今天', '明天', '必须']) else UrgencyLevel.IMPORTANT
+    # 第二优先级：备忘（待办事项）
+    if any(kw in text for kw in ['记得', '别忘了', '明天', '待办', '必须', '提醒']):
+        urgency = UrgencyLevel.URGENT if any(kw in text for kw in ['今天', '明天', '必须', '立即']) else UrgencyLevel.IMPORTANT
         return ClassificationResult(
             category=Category.MEMO,
             confidence=0.7,
@@ -173,13 +190,15 @@ def _simple_classify(text: str) -> ClassificationResult:
             urgency=urgency
         )
     
-    if any(kw in text for kw in ['工作', '会议', '项目', '报告', '客户', '完成']):
+    # 第三优先级：工作
+    if any(kw in text for kw in ['工作', '会议', '项目', '报告', '客户', '完成', '上班', '任务']):
         return ClassificationResult(
             category=Category.WORK,
             confidence=0.7,
             reasoning="检测到工作相关词汇"
         )
     
+    # 默认：生活
     return ClassificationResult(
         category=Category.LIFE,
         confidence=0.6,
