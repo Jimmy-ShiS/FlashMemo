@@ -40,6 +40,10 @@
     "faster-whisper-transcribe": {
       "version": "1.0.0",
       "installedAt": 1773206774118
+    },
+    "bilibili-downloader": {
+      "version": "1.0.0",
+      "installedAt": 1773212976494
     }
   }
 }
