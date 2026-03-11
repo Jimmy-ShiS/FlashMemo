@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Faster Whisper 语音转录脚本
-默认使用 base 模型，平衡速度和准确度
+默认使用 medium 模型，高准确度
 """
 
 import argparse
@@ -16,7 +16,7 @@ except ImportError:
     sys.exit(1)
 
 
-def transcribe(audio_path: str, model_size: str = "base", device: str = "auto"):
+def transcribe(audio_path: str, model_size: str = "medium", device: str = "auto"):
     """
     转录音频文件为文字
     
@@ -60,16 +60,16 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 示例:
-  %(prog)s audio.ogg                    # 使用默认 base 模型
+  %(prog)s audio.ogg                    # 使用默认 medium 模型 (高准确度)
   %(prog)s audio.wav -m tiny           # 使用 tiny 模型 (最快)
-  %(prog)s audio.mp3 -m small -d cuda  # 使用 small 模型 + GPU
+  %(prog)s audio.mp3 -m base -d cuda   # 使用 base 模型 + GPU
         """
     )
     
     parser.add_argument("audio_file", help="音频文件路径 (.ogg, .wav, .mp3, .flac 等)")
-    parser.add_argument("-m", "--model", default="base",
+    parser.add_argument("-m", "--model", default="medium",
                         choices=["tiny", "base", "small", "medium", "large-v2", "large-v3"],
-                        help="模型大小 (默认：base)")
+                        help="模型大小 (默认：medium)")
     parser.add_argument("-d", "--device", default="auto",
                         choices=["auto", "cpu", "cuda"],
                         help="运行设备 (默认：auto)")

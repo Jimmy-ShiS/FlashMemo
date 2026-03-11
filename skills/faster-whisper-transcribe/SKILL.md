@@ -11,7 +11,7 @@ pip3 install --break-system-packages faster-whisper
 ## 使用方法
 
 ```bash
-# 转录语音文件（默认使用 base 模型）
+# 转录语音文件（默认使用 medium 模型，高准确度）
 python3 ~/.openclaw/workspace/skills/faster-whisper-transcribe/voice_transcribe.py /path/to/audio.ogg
 
 # 或使用便捷命令
@@ -23,9 +23,9 @@ python3 ~/.openclaw/workspace/skills/faster-whisper-transcribe/voice_transcribe.
 | 模型 | 速度 | 准确度 | 内存占用 | 适用场景 |
 |------|------|--------|----------|----------|
 | `tiny` | ⚡⚡⚡ 最快 | ⭐ 较低 | ~143 MB | 快速测试 |
-| `base` | ⚡⚡ 平衡 | ⭐⭐ 中等 | ~143 MB | **日常使用（默认）** |
+| `base` | ⚡⚡ 平衡 | ⭐⭐ 中等 | ~143 MB | 日常使用 |
 | `small` | ⚡ 较慢 | ⭐⭐⭐ 较好 | ~488 MB | 高精度需求 |
-| `medium` | 🐌 慢 | ⭐⭐⭐⭐ 高 | ~1.5 GB | 专业转录 |
+| `medium` | 🐌 慢 | ⭐⭐⭐⭐ 高 | ~1.5 GB | **专业转录（默认）** |
 | `large-v2/v3` | 🐌🐌 最慢 | ⭐⭐⭐⭐⭐ 最高 | ~3 GB | 专业场景 |
 
 ## 命令行参数
