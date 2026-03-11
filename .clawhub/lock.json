@@ -36,6 +36,10 @@
     "github": {
       "version": "1.0.0",
       "installedAt": 1773129362699
+    },
+    "faster-whisper-transcribe": {
+      "version": "1.0.0",
+      "installedAt": 1773206774118
     }
   }
 }
