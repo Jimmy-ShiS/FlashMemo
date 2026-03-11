@@ -1,45 +1,40 @@
 #!/usr/bin/env python3
 """
 Bilibili Subtitle Downloader Script
-Usage: python download_subtitles.py <bvid_or_url> [output_path]
+Usage: python download_subtitles.py <bvid_or_url>
+
+Default output directory: ~/Downloaders/OpenClaw/bilibili/
 """
 
 import os
 import sys
-import json
+from pathlib import Path
 from bilibili_api import video, sync
 
+# 默认下载目录
+DEFAULT_OUTPUT_DIR = Path.home() / "Downloaders" / "OpenClaw" / "bilibili"
 
-def download_subtitles(bvid, output_path="./"):
+
+def download_subtitles(bvid, output_path=None):
     """Download subtitles from a Bilibili video."""
+    if output_path is None:
+        output_path = DEFAULT_OUTPUT_DIR
+    
+    # 确保目录存在
+    Path(output_path).mkdir(parents=True, exist_ok=True)
+    
     v = video.Video(bvid=bvid)
-    os.makedirs(output_path, exist_ok=True)
+    
+    sync(v.download_subtitle(output=str(Path(output_path))))
 
-    subtitles = sync(v.get_subtitle())
-
-    if not subtitles:
-        print("No subtitles available for this video")
-        return
-
-    for sub in subtitles:
-        lang = sub["lan"]
-        sub_info = sync(v.get_subtitle(sub["id"]))
-
-        filename = f"{v.get_info()['title'][:30]}_{lang}.json".replace("/", "_")
-        output_file = os.path.join(output_path, filename)
-
-        with open(output_file, "w", encoding="utf-8") as f:
-            json.dump(sub_info, f, ensure_ascii=False, indent=2)
-
-        print(f"Downloaded subtitle: {output_file} ({lang})")
+    print(f"✅ 字幕已下载到：{output_path}")
+    return output_path
 
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        print("Usage: python download_subtitles.py <bvid> [output_path]")
+        print(__doc__)
         sys.exit(1)
 
     bvid = sys.argv[1]
-    output = sys.argv[2] if len(sys.argv) > 2 else "./"
-
-    download_subtitles(bvid, output)
+    download_subtitles(bvid)

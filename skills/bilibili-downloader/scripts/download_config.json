@@ -1,6 +1,6 @@
 {
   "default_quality": 125,
-  "output_directory": "./downloads",
+  "output_directory": "/home/jimmy/Downloaders/OpenClaw/bilibili",
   "audio_only": false,
   "download_subtitles": true,
   "download_cover": true,

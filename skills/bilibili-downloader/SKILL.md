@@ -5,6 +5,13 @@ description: Download videos, audio, subtitles, and covers from Bilibili using b
 
 # Bilibili Downloader
 
+## 📂 默认下载目录
+
+**所有下载内容默认保存到：**
+```
+~/Downloaders/OpenClaw/bilibili/
+```
+
 ## Quick Start
 
 Download a video by URL:
