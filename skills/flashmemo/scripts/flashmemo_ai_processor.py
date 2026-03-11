@@ -158,31 +158,18 @@ def submit_ai_request(request: dict) -> Optional[dict]:
 def _simple_classify(text: str) -> ClassificationResult:
     """简单规则分类（fallback）
     
-    分类优先级：memo > account > work > life
-    待办事项优先匹配，确保未来事件不会误分类为 life
+    分类优先级：account > memo > work > life
+    账目关键词优先匹配，确保涉及金额的内容不会误分类为 life
     
-    注意："扣款"、"缴费"、"充值"等词虽然是财务相关，但通常是待办事项（还没发生），
-    所以优先分类为 memo，除非上下文明确表示已发生。
+    注意："扣款"、"缴费"、"充值"等词需要结合上下文：
+    - 有金额（如"扣款 100 元"）→ account（已发生）
+    - 无金额（如"记得缴费"）→ memo（待办）
+    但最终分类应由上下文意图决定，而非单纯关键词匹配。
     """
-    # 第一优先级：备忘/待办（还没发生的事）
-    # 关键词：记得、别忘了、待办、提醒、要、准备、打算、计划、帮我记、记一下
-    # 特殊词：扣款、缴费、充值（这些通常是待办，不是已发生的账目）
-    memo_keywords = ['记得', '别忘了', '待办', '提醒', '要', '准备', '打算', 
-                     '计划', '帮我记', '记一下', '备忘', '有事', '任务',
-                     '扣款', '缴费', '充值']
-    if any(kw in text for kw in memo_keywords):
-        urgency = UrgencyLevel.URGENT if any(kw in text for kw in ['今天', '明天', '必须', '立即', '马上']) else UrgencyLevel.NORMAL
-        return ClassificationResult(
-            category=Category.MEMO,
-            confidence=0.85,
-            reasoning="检测到待办事项关键词",
-            urgency=urgency
-        )
-    
-    # 第二优先级：账目（涉及金钱，已发生的事）
+    # 第一优先级：账目（涉及金钱，已发生的事）
     # 关键词：元、块、圆、¥、￥、收入、支出、花了、买了、收到、入账、工资、消费
     account_keywords = ['元', '块', '圆', '¥', '￥', '收入', '支出', '花了', '买了', 
-                        '收到', '入账', '工资', '稿费', '消费', '花费']
+                        '收到', '入账', '工资', '稿费', '消费', '付款', '支付', '花费']
     if any(kw in text for kw in account_keywords):
         # 额外检查：是否有数字（金额）
         import re
@@ -196,6 +183,16 @@ def _simple_classify(text: str) -> ClassificationResult:
             category=Category.ACCOUNT,
             confidence=0.7,
             reasoning="检测到财务相关词汇"
+        )
+    
+    # 第二优先级：备忘（待办事项）
+    if any(kw in text for kw in ['记得', '别忘了', '明天', '待办', '必须', '提醒']):
+        urgency = UrgencyLevel.URGENT if any(kw in text for kw in ['今天', '明天', '必须', '立即']) else UrgencyLevel.IMPORTANT
+        return ClassificationResult(
+            category=Category.MEMO,
+            confidence=0.7,
+            reasoning="检测到待办事项",
+            urgency=urgency
         )
     
     # 第三优先级：工作
