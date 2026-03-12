@@ -79,8 +79,70 @@ def main():
             print("暂无符合条件的备忘")
             return
         
+        # 解析记录并分类（待办 vs 已完成）
+        todo_lines = []
+        done_lines = []
         for line in lines:
-            print(line)
+            # 格式：2026-03-12.00:27:45: 代办 - 普通 - 教晨晨拆婴儿车
+            # 或：2026-03-11.00:50:59: 完成 - 紧急 - 今天上午 10 点买净化器湿帘
+            if "代办 -" in line:
+                todo_lines.append(line)
+            elif "完成 -" in line:
+                done_lines.append(line)
+        
+        # 输出表格格式
+        if todo_lines:
+            print("📌 待办事项：")
+            print("")
+            print("| 记录时间 | 紧急程度 | 代办内容 |")
+            print("|----------|----------|----------|")
+            for line in todo_lines:
+                # 解析：2026-03-12.00:27:45: 代办 - 普通 - 教晨晨拆婴儿车
+                parts = line.split(": ", 1)
+                if len(parts) >= 2:
+                    timestamp = parts[0]  # 2026-03-12.00:27:45
+                    content_part = parts[1]  # 代办 - 普通 - 教晨晨拆婴儿车
+                    date_str = timestamp.split(".")[0]  # 2026-03-12
+                    formatted_date = date_str.replace("-", "/")  # 2026/03/12
+                    
+                    # 提取紧急程度和内容
+                    content_parts = content_part.split(" - ", 2)
+                    if len(content_parts) >= 3:
+                        urgency = content_parts[1]  # 普通/重要/紧急
+                        content = content_parts[2]  # 教晨晨拆婴儿车
+                    else:
+                        urgency = "普通"
+                        content = content_part
+                    print(f"| {formatted_date} | {urgency} | {content} |")
+            print("")
+        
+        if done_lines:
+            print("✅ 已完成：")
+            print("")
+            print("| 记录时间 | 紧急程度 | 代办内容 |")
+            print("|----------|----------|----------|")
+            for line in done_lines:
+                parts = line.split(": ", 1)
+                if len(parts) >= 2:
+                    timestamp = parts[0]
+                    content_part = parts[1]
+                    date_str = timestamp.split(".")[0]
+                    formatted_date = date_str.replace("-", "/")
+                    
+                    content_parts = content_part.split(" - ", 2)
+                    if len(content_parts) >= 3:
+                        urgency = content_parts[1]
+                        content = content_parts[2]
+                    else:
+                        urgency = "普通"
+                        content = content_part
+                    print(f"| {formatted_date} | {urgency} | {content} |")
+            print("")
+        
+        # 如果没有输出任何表格（理论上不会到这里）
+        if not todo_lines and not done_lines:
+            print("暂无符合条件的备忘")
+            return
     
     else:
         # 其他分类查询
