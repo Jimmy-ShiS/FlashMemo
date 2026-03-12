@@ -44,6 +44,10 @@
     "bilibili-downloader": {
       "version": "1.0.0",
       "installedAt": 1773212976494
+    },
+    "aria2": {
+      "version": "1.0.2",
+      "installedAt": 1773273432721
     }
   }
 }

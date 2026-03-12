@@ -27,7 +27,24 @@
 我不会做对当前运行环境或文件系统造成破坏的事。
 
 ## 📝 待办管理规则
-- **统一使用 FlashMemo** 管理所有待办事项和提醒
-- **存储位置**: `~/Documents/FlashMemo/feishu/ou_adf0d189f4676cb9f7176af21cc1aa0a/`
-- **定时提醒**: 使用 flashmemo 技能的定时消息提醒能力
-- **HEARTBEAT.md**: 不再存储待办，仅用于 heartbeat 机制配置
+
+### 统一使用 FlashMemo
+- **所有待办事项统一使用 FlashMemo 管理**，禁止使用飞书任务/日历等其他工具
+- **存储位置**: `~/Documents/FlashMemo/{channel}/{user_id}/`
+  - 飞书渠道示例：`~/Documents/FlashMemo/feishu/ou_adf0d189f4676cb9f7176af21cc1aa0a/`
+  - 渠道和用户标识根据当前会话自动确定
+
+### 待办查询逻辑（强固化）
+- **查询位置**: 仅查询对应渠道 + 用户标识目录下的 `ImportantMemo.md` 文件
+- **查询方式**: 直接读取 `ImportantMemo.md` 文件内容，筛选标记为"代办"的记录
+- **适用范围**: 所有渠道（飞书、Discord、Telegram 等）和所有会话类型
+- **禁止行为**: 
+  - 禁止从 MEMORY.md 读取待办
+  - 禁止从其他非 FlashMemo 位置读取待办
+  - 禁止使用 flashmemo_query.py 等脚本（直接读文件更可靠）
+
+### 定时提醒
+- 使用 flashmemo 技能的定时消息提醒能力
+
+### HEARTBEAT.md
+- 不再存储待办，仅用于 heartbeat 机制配置
