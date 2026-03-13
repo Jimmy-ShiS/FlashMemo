@@ -38,3 +38,13 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+---
+
+## 🔍 搜索配置
+
+** Tavily Search**（优先使用）
+- 技能位置：`~/openclaw/workspace/skills/tavily-search/`
+- API Key：`TAVILY_API_KEY`（已配置在 ~/.bashrc）
+- 用途：用户要求搜索时优先使用此技能
+- 命令：`node scripts/search.mjs "查询内容" -n 10`
